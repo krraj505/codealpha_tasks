@@ -16,7 +16,9 @@ bin/
 **/data/
 *.log
 
-# OS generated files
-Thumbs.db
-Desktop.ini
-.DS_Store
+# Secrets and credentials
+*.env
+*.env.*
+*.key
+*.token
+

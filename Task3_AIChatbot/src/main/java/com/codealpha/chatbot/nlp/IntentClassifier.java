@@ -60,7 +60,7 @@ public class IntentClassifier {
 
         // Variables and Data Types
         addPattern(IntentType.VARIABLES_DATA_TYPES,
-                ".*\\b(variables?|data ?types?|primitive types?|casting|type casting|int|double|boolean|char|float)\\b.*");
+                ".*\\b(variables?|data ?types?|primitive types?|casting|type casting|int|double|boolean|char|float|strings?|immutability|stringbuilder|stringbuffer)\\b.*");
 
         // Arrays and ArrayLists
         addPattern(IntentType.ARRAYS_ARRAYLISTS,
@@ -124,7 +124,7 @@ public class IntentClassifier {
         setKeywords(IntentType.GOODBYE, "bye", "goodbye", "farewell", "exit", "quit", "later");
         setKeywords(IntentType.JAVA_PROGRAMMING, "java", "jvm", "jdk", "jre", "bytecode", "platform", "independent");
         setKeywords(IntentType.OOP, "oop", "oops", "object", "oriented", "pillars", "principles");
-        setKeywords(IntentType.VARIABLES_DATA_TYPES, "variable", "datatype", "type", "primitive", "casting", "scope");
+        setKeywords(IntentType.VARIABLES_DATA_TYPES, "variable", "datatype", "type", "primitive", "casting", "scope", "string", "strings", "immutable", "stringbuilder");
         setKeywords(IntentType.ARRAYS_ARRAYLISTS, "array", "arrays", "arraylist", "elements", "fixed", "dynamic");
         setKeywords(IntentType.LOOPS_CONDITIONS, "loop", "loops", "for", "while", "condition", "switch", "if", "else");
         setKeywords(IntentType.CLASSES_OBJECTS, "class", "classes", "object", "objects", "constructor", "blueprint");
@@ -136,7 +136,7 @@ public class IntentClassifier {
         setKeywords(IntentType.COLLECTIONS, "collection", "collections", "list", "set", "map", "hashmap", "queue");
         setKeywords(IntentType.FILE_HANDLING, "file", "files", "io", "reader", "writer", "bufferedreader", "stream");
         setKeywords(IntentType.STUDY_COLLEGE_FAQS, "codealpha", "internship", "college", "viva", "exam", "task");
-        setKeywords(IntentType.TECHNOLOGY_FAQS, "git", "github", "maven", "ide", "intellij", "vscode", "software");
+        setKeywords(IntentType.TECHNOLOGY_FAQS, "git", "github", "maven", "ide", "intellij", "vscode", "software", "python", "ai", "ml", "api", "rest", "json");
     }
 
     private void setKeywords(IntentType type, String... kws) {

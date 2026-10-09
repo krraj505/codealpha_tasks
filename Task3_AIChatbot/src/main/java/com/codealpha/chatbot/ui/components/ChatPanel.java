@@ -208,10 +208,10 @@ public class ChatPanel extends JPanel {
         cardsGrid.setMaximumSize(new Dimension(640, 220));
 
         cardsGrid.add(createPromptCard("OOP Pillars", "Explain OOP and its 4 pillars"));
+        cardsGrid.add(createPromptCard("String & Immutability", "What is String in Java and why is it immutable?"));
         cardsGrid.add(createPromptCard("Polymorphism", "What is Polymorphism in Java?"));
-        cardsGrid.add(createPromptCard("Classes & Objects", "Explain Java classes and objects"));
+        cardsGrid.add(createPromptCard("Python vs Java", "Compare Python and Java for software and AI development"));
         cardsGrid.add(createPromptCard("Exception Handling", "How does Exception Handling work?"));
-        cardsGrid.add(createPromptCard("Collections", "Explain Java Collections Framework"));
         cardsGrid.add(createPromptCard("CodeAlpha Tasks", "How do I succeed in CodeAlpha Internship?"));
 
         emptyStatePanel.add(cardsGrid);
@@ -287,8 +287,8 @@ public class ChatPanel extends JPanel {
             @Override
             protected ChatMessage doInBackground() throws Exception {
                 // Natural simulated cognitive delay
-                Thread.sleep(220);
-                return chatbotEngine.processQuery(activeConv.getId(), userQuery);
+                Thread.sleep(180);
+                return chatbotEngine.processQuery(activeConv.getId(), userQuery, activeConv.getMessages());
             }
 
             @Override

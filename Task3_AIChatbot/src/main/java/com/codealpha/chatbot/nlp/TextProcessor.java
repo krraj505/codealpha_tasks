@@ -38,8 +38,11 @@ public class TextProcessor {
             "public", "private", "protected", "static", "final", "void", "null", "new",
             "super", "this", "extends", "implements", "override", "overload", "constructor",
             "method", "methods", "function", "functions", "parameter", "return", "int", "float",
-            "double", "boolean", "char", "string", "git", "github", "maven", "pom", "codealpha",
-            "task", "internship", "example", "examples", "line", "code", "explain", "help"
+            "double", "boolean", "char", "string", "strings", "stringbuilder", "stringbuffer",
+            "immutable", "immutability", "python", "javascript", "c++", "c", "ai", "ml",
+            "api", "rest", "json", "sql", "html", "css", "docker", "cloud", "algorithm",
+            "algorithms", "git", "github", "maven", "pom", "codealpha", "task", "internship",
+            "example", "examples", "line", "code", "explain", "help", "resume", "email"
     ));
 
     private static final Pattern NON_ALPHANUMERIC = Pattern.compile("[^a-zA-Z0-9_#+\\-\\s]");

@@ -9,9 +9,9 @@ import com.codealpha.chatbot.nlp.TextProcessor;
 import java.util.*;
 
 /**
- * Intelligent NLP Chatbot Response Engine.
+ * Intelligent Hybrid Chatbot Response Engine.
  * Coordinates text processing, intent recognition, context management,
- * relevance scoring, clarification generation, and fallback recovery.
+ * relevance scoring, local knowledge base matching, and general-purpose LLM integration.
  */
 public class ChatbotEngine {
 
@@ -21,10 +21,16 @@ public class ChatbotEngine {
     private final IntentClassifier intentClassifier;
     private final KnowledgeBaseService knowledgeBaseService;
     private final SettingsService settingsService;
+    private final LlmService llmService;
 
     public ChatbotEngine(KnowledgeBaseService knowledgeBaseService, SettingsService settingsService) {
+        this(knowledgeBaseService, settingsService, new LlmService(settingsService));
+    }
+
+    public ChatbotEngine(KnowledgeBaseService knowledgeBaseService, SettingsService settingsService, LlmService llmService) {
         this.knowledgeBaseService = knowledgeBaseService;
         this.settingsService = settingsService;
+        this.llmService = llmService;
         this.textProcessor = new TextProcessor();
         this.relevanceScorer = new RelevanceScorer(this.textProcessor);
         this.contextManager = new ContextManager();
@@ -35,10 +41,21 @@ public class ChatbotEngine {
         return contextManager;
     }
 
+    public LlmService getLlmService() {
+        return llmService;
+    }
+
     /**
      * Generates a contextual assistant response for a given user query.
      */
     public ChatMessage processQuery(String conversationId, String query) {
+        return processQuery(conversationId, query, Collections.emptyList());
+    }
+
+    /**
+     * Generates a contextual assistant response for a given user query with multi-turn history.
+     */
+    public ChatMessage processQuery(String conversationId, String query, List<ChatMessage> history) {
         long startTime = System.currentTimeMillis();
 
         if (query == null || query.trim().isBlank()) {
@@ -50,9 +67,13 @@ public class ChatbotEngine {
             return emptyMsg;
         }
 
-        double threshold = settingsService.getSettings().getConfidenceThreshold();
-        List<KnowledgeEntry> kb = knowledgeBaseService.getAllEntries();
+        UserSettings settings = settingsService.getSettings();
+        double threshold = settings.getConfidenceThreshold();
+        boolean llmEnabled = settings.isEnableLlm();
+        boolean llmConfigured = llmService != null && llmService.isConfigured() && llmEnabled;
+        boolean preferOnline = settings.isPreferOnlineAi();
 
+        List<KnowledgeEntry> kb = knowledgeBaseService.getAllEntries();
         IntentMatchResult matchResult = intentClassifier.classify(query, kb, threshold);
 
         String responseContent;
@@ -62,39 +83,52 @@ public class ChatbotEngine {
         boolean isFollowUp = matchResult.isFollowUp();
         List<String> suggestions = new ArrayList<>();
 
+        // 1. If user explicitly configured "Prefer Online AI" and it's not a greeting/goodbye, route directly to LLM
+        if (preferOnline && llmConfigured && !isSystemIntent(matchResult.getIntent())) {
+            return generateLlmChatMessage(conversationId, query, history, startTime);
+        }
+
+        // 2. Check for Contextual Follow-Up Questions on local Knowledge Base entry
         if (matchResult.isFollowUp()) {
-            // Handled as contextual follow-up
             KnowledgeEntry entry = matchResult.getMatchedEntry();
-            String followUpType = matchResult.getFollowUpType();
+            if (entry != null) {
+                String followUpType = matchResult.getFollowUpType();
 
-            if ("example".equalsIgnoreCase(followUpType)) {
-                if (entry.getFollowUpExample() != null && !entry.getFollowUpExample().isBlank()) {
-                    responseContent = "Here is a code example for **" + entry.getQuestion() + "**:\n\n```java\n"
-                            + entry.getFollowUpExample() + "\n```";
+                if ("example".equalsIgnoreCase(followUpType)) {
+                    if (entry.getFollowUpExample() != null && !entry.getFollowUpExample().isBlank()) {
+                        responseContent = "Here is a code example for **" + entry.getQuestion() + "**:\n\n```java\n"
+                                + entry.getFollowUpExample() + "\n```";
+                        suggestions.add("Explain it line by line");
+                        suggestions.add("What are the advantages of this?");
+                    } else {
+                        responseContent = "Here is the implementation code for **" + entry.getQuestion() + "**:\n\n"
+                                + entry.getAnswer();
+                    }
+                } else if ("line_by_line".equalsIgnoreCase(followUpType)) {
+                    if (entry.getFollowUpLineByLine() != null && !entry.getFollowUpLineByLine().isBlank()) {
+                        responseContent = "### Line-by-Line Breakdown: " + entry.getQuestion() + "\n\n"
+                                + entry.getFollowUpLineByLine();
+                        suggestions.add("Give me another example");
+                        suggestions.add("What exceptions can occur?");
+                    } else {
+                        responseContent = "Let's review the key elements of **" + entry.getQuestion() + "** step by step:\n\n"
+                                + entry.getAnswer();
+                    }
+                } else {
+                    responseContent = "### Deep Dive: " + entry.getQuestion() + "\n\n" + entry.getAnswer();
+                    suggestions.add("Give me an example");
                     suggestions.add("Explain it line by line");
-                    suggestions.add("What are the advantages of this?");
-                } else {
-                    responseContent = "Here is the implementation code for **" + entry.getQuestion() + "**:\n\n"
-                            + entry.getAnswer();
                 }
-            } else if ("line_by_line".equalsIgnoreCase(followUpType)) {
-                if (entry.getFollowUpLineByLine() != null && !entry.getFollowUpLineByLine().isBlank()) {
-                    responseContent = "### Line-by-Line Breakdown: " + entry.getQuestion() + "\n\n"
-                            + entry.getFollowUpLineByLine();
-                    suggestions.add("Give me another example");
-                    suggestions.add("What exceptions can occur?");
-                } else {
-                    responseContent = "Let's review the key elements of **" + entry.getQuestion() + "** step by step:\n\n"
-                            + entry.getAnswer();
-                }
-            } else {
-                responseContent = "### Deep Dive: " + entry.getQuestion() + "\n\n" + entry.getAnswer();
-                suggestions.add("Give me an example");
-                suggestions.add("Explain it line by line");
-            }
 
-            contextManager.updateContext(matchResult.getIntent(), entry, entry.getCategory());
-            knowledgeBaseService.recordUsage(entry.getId());
+                contextManager.updateContext(matchResult.getIntent(), entry, entry.getCategory());
+                knowledgeBaseService.recordUsage(entry.getId());
+            } else if (llmConfigured) {
+                // If follow-up in chat without local KB entry, delegate to LLM with full conversation history
+                return generateLlmChatMessage(conversationId, query, history, startTime);
+            } else {
+                responseContent = getFallbackResponse(query);
+                suggestions = getDefaultSuggestions();
+            }
 
         } else if (matchResult.isHighConfidence(threshold)) {
             // High confidence direct answer
@@ -110,14 +144,18 @@ public class ChatbotEngine {
                 suggestions.add("Explain it line by line");
                 suggestions.add("Tell me more");
             } else {
-                // Pre-configured intent response
+                // Pre-configured system intent response (greetings, intro, help, thanks, goodbye)
                 responseContent = getSystemIntentResponse(matchResult.getIntent());
                 contextManager.updateContext(matchResult.getIntent(), null, matchResult.getIntent().getCategory());
                 suggestions = getSuggestionsForIntent(matchResult.getIntent());
             }
 
+        } else if (llmConfigured) {
+            // Unmapped, medium, or general knowledge question routed to General-Purpose LLM
+            return generateLlmChatMessage(conversationId, query, history, startTime);
+
         } else if (matchResult.isMediumConfidence(threshold)) {
-            // Medium confidence clarification request
+            // Medium confidence clarification request (in offline mode)
             KnowledgeEntry entry = matchResult.getMatchedEntry();
             if (entry != null) {
                 responseContent = "I noticed you asked about something related to **" + entry.getQuestion() + "** ("
@@ -134,7 +172,7 @@ public class ChatbotEngine {
             }
 
         } else {
-            // Low confidence fallback response
+            // Low confidence fallback response (offline mode)
             responseContent = getFallbackResponse(query);
             intentDisplay = IntentType.UNKNOWN.getDisplayName();
             category = "Fallback";
@@ -151,42 +189,100 @@ public class ChatbotEngine {
         return responseMessage;
     }
 
+    private ChatMessage generateLlmChatMessage(String conversationId, String query, List<ChatMessage> history, long startTime) {
+        LlmService.LlmResponse llmResp = llmService.generateResponse(history, query, null);
+        long latency = Math.max(llmResp.getLatencyMs(), System.currentTimeMillis() - startTime);
+
+        if (llmResp.isSuccess()) {
+            String model = llmResp.getModelUsed();
+            ChatMessage msg = ChatMessage.assistant(
+                    conversationId,
+                    llmResp.getContent(),
+                    "General AI (" + model + ")",
+                    0.96,
+                    "General AI",
+                    latency
+            );
+            msg.setSuggestedQuestions(List.of(
+                    "Can you provide a code example for this?",
+                    "Explain this step by step",
+                    "What are the best practices or pitfalls?"
+            ));
+            contextManager.updateContext(IntentType.UNKNOWN, null, "General AI");
+            return msg;
+        } else {
+            // LLM failed due to network, quota, or authentication
+            String errorMsg = "### ⚠️ AI Model Communication Notice\n\n"
+                    + llmResp.getErrorMessage() + "\n\n"
+                    + "---\n\n"
+                    + getFallbackResponse(query);
+
+            ChatMessage msg = ChatMessage.assistant(
+                    conversationId,
+                    errorMsg,
+                    "AI Error / Offline Fallback",
+                    0.30,
+                    "Fallback",
+                    latency
+            );
+            msg.setSuggestedQuestions(getDefaultSuggestions());
+            return msg;
+        }
+    }
+
+    private boolean isSystemIntent(IntentType intent) {
+        return intent == IntentType.GREETINGS
+                || intent == IntentType.INTRODUCTION
+                || intent == IntentType.GENERAL_HELP
+                || intent == IntentType.THANKS
+                || intent == IntentType.GOODBYE;
+    }
+
     private String getSystemIntentResponse(IntentType intent) {
         return switch (intent) {
-            case GREETINGS -> "Hello! I am RAJ AI, your intelligent Java assistant. What Java or OOP topic can I help you master today?";
-            case INTRODUCTION -> "I am RAJ AI, an intelligent desktop chatbot developed for Task 3 of the CodeAlpha Java Programming Internship.\n\n"
-                    + "I specialize in Core Java, Object-Oriented Principles, Collections, Exception Handling, and File I/O.\n"
-                    + "Ask me a question or try a suggested card!";
+            case GREETINGS -> "Hello! I am RAJ AI, your intelligent programming and general-purpose text assistant. What topic can I help you explore today?";
+            case INTRODUCTION -> "I am RAJ AI, an intelligent desktop assistant developed for Task 3 of the CodeAlpha Java Programming Internship.\n\n"
+                    + "I specialize in Core Java, OOP Principles, Data Structures, and general-purpose software queries across multiple languages.\n"
+                    + "Ask me any question or pick a suggestion from the cards below!";
             case GENERAL_HELP -> "Here is how you can use RAJ AI:\n\n"
-                    + "1. **Ask Java Questions**: Type concepts like 'Explain OOP', 'What is Polymorphism', 'How does try-catch work?'\n"
-                    + "2. **Ask Follow-ups**: Say 'Give me an example' or 'Explain it line by line'\n"
-                    + "3. **Analytics Dashboard**: Visit the Dashboard to see your conversation statistics and intent frequency\n"
-                    + "4. **Knowledge Base**: Add and manage custom Q&A items in real-time\n"
-                    + "5. **Settings**: Adjust font size and switch between Dark and Light themes.";
-            case THANKS -> "You are very welcome! Let me know whenever you'd like to explore more Java concepts.";
-            case GOODBYE -> "Goodbye! Happy coding and all the best with your Java development journey!";
-            default -> "I am RAJ AI, ready to help you with Java and software development concepts. Please ask away!";
+                    + "1. **General-Purpose AI**: Ask questions about Java, Python, C++, Web, Machine Learning, Science, Math, or Writing.\n"
+                    + "2. **Ask Follow-ups**: Say 'Give me an example', 'Explain it line by line', or continue the conversation naturally.\n"
+                    + "3. **Analytics Dashboard**: Visit the Dashboard to see your conversation statistics and intent frequency.\n"
+                    + "4. **Knowledge Base**: Add and manage custom Q&A items in real-time.\n"
+                    + "5. **Settings & AI Configuration**: Configure OpenAI/Groq/Ollama models, API keys, fonts, and themes.";
+            case THANKS -> "You are very welcome! Let me know whenever you'd like to explore more concepts or write more code.";
+            case GOODBYE -> "Goodbye! Happy coding and best of luck with your software development journey!";
+            default -> "I am RAJ AI, ready to help you with software engineering, learning, and general problem solving. Please ask away!";
         };
     }
 
     private String getFallbackResponse(String query) {
         return "I couldn't find a high-confidence match for: *\"" + query + "\"*.\n\n"
-                + "As a rule-based AI programming assistant, I can explain:\n"
+                + "### 💡 Activate General-Purpose AI (ChatGPT Mode)\n"
+                + "RAJ AI can answer questions across **all domains** (Python, C++, ML, science, mathematics, resume writing, general QA) when connected to an AI model!\n\n"
+                + "**How to enable Online AI:**\n"
+                + "1. Set the `AI_API_KEY` or `OPENAI_API_KEY` environment variable in your terminal/system:\n"
+                + "   ```bash\n"
+                + "   setx AI_API_KEY \"your_api_key_here\"\n"
+                + "   ```\n"
+                + "2. Or enter your key directly in the **Settings** tab under *AI Model & Provider Configuration*.\n"
+                + "3. Any OpenAI-compatible provider is supported (OpenAI, Groq, OpenRouter, Ollama).\n\n"
+                + "### 📚 Offline Knowledge Base Available Topics:\n"
                 + "• **Object-Oriented Programming**: Classes, Objects, Inheritance, Polymorphism, Encapsulation, Abstraction\n"
-                + "• **Java Fundamentals**: Variables, Data Types, Control Flow, Arrays, ArrayLists\n"
-                + "• **Robustness & Architecture**: Exception Handling, Collections Framework, File I/O\n"
-                + "• **Internship Guidance**: CodeAlpha Tasks, Git & Maven setup\n\n"
-                + "Try rephrasing your question or click one of the suggested topics below!";
+                + "• **Java Core**: Strings & SCP Immutability, Variables, Data Types, Control Flow, Arrays, ArrayLists\n"
+                + "• **Robustness & Architecture**: Exception Handling, Collections Framework, File I/O, REST APIs\n"
+                + "• **Internship Guidance**: CodeAlpha Tasks, Git & Maven pom.xml\n\n"
+                + "Try asking about any of these topics or choose a suggestion below!";
     }
 
     public List<String> getDefaultSuggestions() {
         return List.of(
                 "Explain OOP and its 4 pillars",
+                "What is String in Java and why is it immutable?",
                 "What is Polymorphism in Java?",
-                "Explain Java classes and objects",
+                "Compare Python and Java for Machine Learning",
                 "How does Exception Handling work?",
-                "What is the Collections Framework?",
-                "How do I succeed in CodeAlpha Internship?"
+                "Explain Java Collections Framework"
         );
     }
 
@@ -194,8 +290,8 @@ public class ChatbotEngine {
         return switch (intent) {
             case GREETINGS, INTRODUCTION -> List.of(
                     "Explain OOP and its 4 pillars",
-                    "Explain Java classes and objects",
-                    "What is Polymorphism in Java?"
+                    "What is String in Java and why is it immutable?",
+                    "Compare Python and Java for Machine Learning"
             );
             case OOP, CLASSES_OBJECTS -> List.of(
                     "Give me an example",
@@ -206,6 +302,11 @@ public class ChatbotEngine {
                     "Give me an example",
                     "Explain it line by line",
                     "What is the difference between abstract class and interface?"
+            );
+            case VARIABLES_DATA_TYPES -> List.of(
+                    "What is String in Java and why is it immutable?",
+                    "Give me an example",
+                    "Explain it line by line"
             );
             default -> getDefaultSuggestions();
         };

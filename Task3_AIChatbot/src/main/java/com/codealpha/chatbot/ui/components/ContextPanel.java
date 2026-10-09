@@ -3,6 +3,7 @@ package com.codealpha.chatbot.ui.components;
 import com.codealpha.chatbot.model.ChatMessage;
 import com.codealpha.chatbot.model.Conversation;
 import com.codealpha.chatbot.model.Role;
+import com.codealpha.chatbot.service.ChatbotEngine;
 import com.codealpha.chatbot.service.ConversationService;
 import com.codealpha.chatbot.ui.theme.ColorPalette;
 import com.codealpha.chatbot.ui.theme.ThemeManager;
@@ -20,10 +21,12 @@ import java.util.List;
 public class ContextPanel extends JPanel {
 
     private final ConversationService conversationService;
+    private final ChatbotEngine chatbotEngine;
     private final Runnable onClearChat;
     private final Runnable onNewChat;
 
     private JLabel titleLabel;
+    private JLabel aiModeLabel;
     private JLabel intentBadge;
     private JProgressBar confidenceBar;
     private JLabel confidenceLabel;
@@ -32,7 +35,12 @@ public class ContextPanel extends JPanel {
     private JTextArea summaryArea;
 
     public ContextPanel(ConversationService conversationService, Runnable onClearChat, Runnable onNewChat) {
+        this(conversationService, null, onClearChat, onNewChat);
+    }
+
+    public ContextPanel(ConversationService conversationService, ChatbotEngine chatbotEngine, Runnable onClearChat, Runnable onNewChat) {
         this.conversationService = conversationService;
+        this.chatbotEngine = chatbotEngine;
         this.onClearChat = onClearChat;
         this.onNewChat = onNewChat;
 
@@ -75,9 +83,15 @@ public class ContextPanel extends JPanel {
         messageCountLabel.setFont(ThemeManager.getInstance().getSmallFont());
         messageCountLabel.setForeground(palette.textSecondary);
 
+        aiModeLabel = new JLabel("○ Offline (Knowledge Base)");
+        aiModeLabel.setFont(ThemeManager.getInstance().getSmallFont());
+        aiModeLabel.setForeground(new Color(245, 158, 11));
+
         sessionCard.add(titleLabel);
         sessionCard.add(Box.createRigidArea(new Dimension(0, 4)));
         sessionCard.add(messageCountLabel);
+        sessionCard.add(Box.createRigidArea(new Dimension(0, 4)));
+        sessionCard.add(aiModeLabel);
         container.add(sessionCard);
         container.add(Box.createRigidArea(new Dimension(0, 12)));
 
@@ -210,6 +224,16 @@ public class ContextPanel extends JPanel {
 
         titleLabel.setText(conv.getTitle());
         messageCountLabel.setText(conv.getMessageCount() + " messages (" + conv.getUserMessageCount() + " user)");
+
+        if (aiModeLabel != null) {
+            if (chatbotEngine != null && chatbotEngine.getLlmService() != null && chatbotEngine.getLlmService().isConfigured()) {
+                aiModeLabel.setText("● Online (" + chatbotEngine.getLlmService().getActiveModel() + ")");
+                aiModeLabel.setForeground(new Color(16, 185, 129));
+            } else {
+                aiModeLabel.setText("○ Offline (Knowledge Base)");
+                aiModeLabel.setForeground(new Color(245, 158, 11));
+            }
+        }
 
         List<ChatMessage> msgs = conv.getMessages();
         ChatMessage lastAssistant = null;

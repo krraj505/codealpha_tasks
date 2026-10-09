@@ -100,7 +100,7 @@ public class MainFrame extends JFrame {
         chatPanel = new ChatPanel(conversationService, chatbotEngine, this::onConversationUpdated);
         dashboardPanel = new DashboardPanel(analyticsService, this::switchView, this::handleNewChat);
         kbPanel = new KnowledgeBasePanel(kbService);
-        settingsPanel = new SettingsPanel(settingsService, conversationService, kbService, storageService, this::onThemeApplied);
+        settingsPanel = new SettingsPanel(settingsService, conversationService, kbService, storageService, chatbotEngine.getLlmService(), this::onThemeApplied);
 
         workspacePanel.add(chatPanel, "CHAT");
         workspacePanel.add(dashboardPanel, "DASHBOARD");
@@ -110,6 +110,7 @@ public class MainFrame extends JFrame {
         // 3. RIGHT CONTEXT PANEL
         contextPanel = new ContextPanel(
                 conversationService,
+                chatbotEngine,
                 () -> {
                     conversationService.clearActiveConversationMessages();
                     chatPanel.refreshMessages();

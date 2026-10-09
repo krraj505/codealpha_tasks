@@ -79,4 +79,32 @@ public class ChatbotEngineTest {
         assertTrue(response.getContent().contains("couldn't find a high-confidence match"));
         assertEquals("Unknown or Unsupported Questions", response.getDetectedIntent());
     }
+
+    @Test
+    public void testQuestionMatchingWhatIsStringUppercase() {
+        ChatMessage response = engine.processQuery("conv-1", "WHAT IS STRING");
+        assertNotNull(response);
+        assertTrue(response.getContent().toLowerCase().contains("immutable") || response.getContent().toLowerCase().contains("string"));
+        assertTrue(response.getConfidenceScore() >= 0.70, "Confidence for 'WHAT IS STRING' should be >= 0.70");
+    }
+
+    @Test
+    public void testQuestionMatchingStringVariations() {
+        ChatMessage r1 = engine.processQuery("conv-1", "what is a string");
+        assertNotNull(r1);
+        assertTrue(r1.getContent().toLowerCase().contains("string"));
+        assertTrue(r1.getConfidenceScore() >= 0.70);
+
+        ChatMessage r2 = engine.processQuery("conv-1", "Explain String in Java and why is it immutable");
+        assertNotNull(r2);
+        assertTrue(r2.getContent().toLowerCase().contains("immutable"));
+    }
+
+    @Test
+    public void testOfflineGuidanceWhenLlmNotConfigured() {
+        ChatMessage response = engine.processQuery("conv-1", "Draft a leave application email");
+        assertNotNull(response);
+        assertTrue(response.getContent().contains("Activate General-Purpose AI")
+                || response.getContent().contains("couldn't find a high-confidence match"));
+    }
 }

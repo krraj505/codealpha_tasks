@@ -1,25 +1,66 @@
-# 🤖 RAJ AI — Desktop Java Programming Assistant
+# 🤖 RAJ AI — General-Purpose Desktop AI Assistant & Pair Programmer
 
 [![Java](https://img.shields.io/badge/Java-17%2B-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)](https://openjdk.org/)
 [![Maven](https://img.shields.io/badge/Maven-3.9%2B-C71A36?style=for-the-badge&logo=apachemaven&logoColor=white)](https://maven.apache.org/)
 [![GUI](https://img.shields.io/badge/Swing-FlatLaf-3B82F6?style=for-the-badge)](https://www.formdev.com/flatlaf/)
 [![Internship](https://img.shields.io/badge/CodeAlpha-Java%20Internship-8B5CF6?style=for-the-badge)](https://codealpha.tech/)
 [![Build](https://img.shields.io/badge/Build-Passing-10B981?style=for-the-badge)]()
+[![Tests](https://img.shields.io/badge/Tests-40%20Passed-10B981?style=for-the-badge)]()
 
-**RAJ AI** is a high-performance desktop AI Chatbot and intelligent Java pair programmer developed for **Task 3 (Artificial Intelligence Chatbot)** of the **CodeAlpha Java Programming Internship**. Built from scratch in **Java 17+** with a custom Swing UI/UX design system, rule-based NLP intent recognition engine, multi-turn conversation context tracking, live analytics dashboard, real-time knowledge base management, and thread-safe atomic local JSON persistence.
+**RAJ AI** is a high-performance desktop AI Assistant and intelligent pair programmer developed for **Task 3 (Artificial Intelligence Chatbot)** of the **CodeAlpha Java Programming Internship**. Built from scratch in **Java 17+** with a custom Swing UI/UX design system, general-purpose Large Language Model (LLM) integration, rule-based NLP intent recognition engine, multi-turn conversation context tracking, live analytics dashboard, real-time knowledge base management, and thread-safe atomic local JSON persistence.
 
 ---
 
 ## 🌟 Executive Summary
 
-Unlike standard introductory chatbots that rely on simple if-else statements or plain console I/O, **RAJ AI** is engineered as an enterprise-grade desktop software application. It delivers a modern AI user experience comparable to leading AI desktop tools, featuring:
+Unlike standard introductory chatbots that rely only on simple if-else statements or hardcoded responses, **RAJ AI** is an enterprise-grade desktop software application featuring a **Smart Hybrid Architecture**:
+- **General-Purpose AI Text Assistant (ChatGPT Mode)**: Answers questions across all domains — Java, Python, C, C++, JavaScript, AI & Machine Learning, science, mathematics, history, writing, resume reviews, email drafts, debugging, and everyday reasoning.
+- **Configurable LLM Integration**: Uses standard OpenAI-compatible REST endpoints supporting **OpenAI** (`gpt-4o-mini`, `gpt-4o`), **Groq Cloud** (`llama-3.3-70b-versatile`, `mixtral-8x7b`), **OpenRouter**, **DeepSeek**, and local **Ollama** (`llama3.2`).
+- **Zero-Hardcoded Secrets**: API keys are securely resolved from environment variables (`AI_API_KEY`, `OPENAI_API_KEY`, `GROQ_API_KEY`, `GEMINI_API_KEY`), system properties, or optional settings overrides.
+- **Asynchronous Non-Blocking HTTP**: Network calls run inside background `SwingWorker` threads using Java 11+ `java.net.http.HttpClient`, keeping the desktop GUI fluid and responsive at all times.
+- **Multi-Turn Conversational Memory**: Passes historical conversation turns into the model so users can ask contextual follow-ups (*"Give me a Python example"*, *"Explain that line by line"*, *"How does this relate to the previous point?"*).
+- **Fast Offline Knowledge Base**: Curated local Q&A catalog covering Core Java, Object-Oriented Principles, String Immutability, Collections, Exception Handling, File I/O, and CodeAlpha Internship FAQs with zero latency and 100% offline capability.
 - **Premium Design System**: Dark Navy (`#0A0F1D`) and Charcoal (`#131C33`) surfaces with Electric Blue (`#3B82F6`) and Violet (`#8B5CF6`) accents, plus dynamic 1-click Light Studio theme switching.
-- **Minimalist RAJ AI Vector Logo**: Procedurally rendered vector badge in Graphics2D that scales crisp at all DPI levels.
-- **Rule-Based NLP & Intent Recognition**: 21 recognized technical and conversational intents with tokenization, keyword extraction preserving programming terms, stemming, and fuzzy Levenshtein similarity.
-- **Contextual Awareness & Follow-ups**: Maintains conversation state across turns. For example, asking *"Explain Java classes"* followed by *"Give me an example"* generates the class code snippet, and *"Explain it line by line"* breaks down the snippet sequentially.
-- **Advanced Analytics Dashboard**: 4 custom-rendered vector charts (Area activity chart, Donut intent distribution, Bar category usage, Stacked quality meter) and KPI metrics calculated strictly from actual stored data.
-- **Knowledge Base Catalog**: Dedicated management interface supporting search, category filtering, live Q&A editing, validation, duplicate prevention, and JSON import/export without requiring application rebuilds.
+- **Minimalist RAJ AI Vector Logo**: Procedurally rendered vector badge in Java2D Graphics2D that scales cleanly across High-DPI screens.
+- **Advanced Analytics Dashboard**: 4 custom vector charts (Area activity chart, Donut intent distribution, Bar category usage, Stacked quality meter) and KPI telemetry calculated from stored records.
 - **Thread-Safe Local Storage**: Atomic JSON writes with fallback templates preventing data corruption.
+
+---
+
+## ⚙️ AI Engine Configuration & Environment Variables
+
+RAJ AI seamlessly operates in two modes:
+
+### 1. Online General-Purpose AI Mode (Recommended)
+Set your API key in your operating system environment before launching, or enter it in the **Settings** tab:
+
+```bash
+# Windows Command Prompt
+setx AI_API_KEY "your_api_key_here"
+
+# Windows PowerShell
+$env:AI_API_KEY="your_api_key_here"
+
+# macOS / Linux
+export AI_API_KEY="your_api_key_here"
+```
+
+The application checks the following environment variables in order:
+1. `AI_API_KEY`
+2. `OPENAI_API_KEY`
+3. `GROQ_API_KEY` (Fast inference via Groq Cloud)
+4. `GEMINI_API_KEY`
+
+### 2. In-App AI Settings
+Navigate to the **Settings** tab in RAJ AI to customize:
+- **AI Provider**: OpenAI, Groq Cloud, OpenRouter, Ollama (Local), or Custom Endpoint.
+- **Model Name**: e.g., `gpt-4o-mini`, `llama-3.3-70b-versatile`, `deepseek-chat`.
+- **API Base URL**: e.g., `https://api.openai.com/v1/chat/completions` or `https://api.groq.com/openai/v1/chat/completions`.
+- **Test Connection**: 1-click connectivity verification displaying response latency and status.
+- **Prefer Online AI**: Checkbox to route all queries directly to the online model.
+
+### 3. Offline Knowledge Base Mode
+If no API key is detected, RAJ AI automatically operates in **Offline Mode**, providing curated responses for Java, OOP, String Immutability, Collections, and CodeAlpha internship tasks, accompanied by clear instructions on enabling online AI.
 
 ---
 
@@ -34,18 +75,18 @@ The application window is organized into three balanced regions:
   - `Chat Assistant`: Primary interactive conversational workspace.
   - `Analytics`: Operational telemetry, charts, and metrics dashboard.
   - `Knowledge Base`: Q&A catalog editor and JSON data tools.
-  - `Settings`: Themes, font sizing, NLP thresholds, and data management.
+  - `Settings`: Themes, font sizing, AI model configuration, and storage maintenance.
 - **Search Conversations**: Real-time filtering of active and previous chat history.
 - **Pinned & Recent Conversations**: Session history with right-click context menu (Rename, Pin/Unpin, Delete).
 - **Theme Toggle & Collapse Control**: Instant switch between Dark Navy and Light Studio; sidebar collapses to compact icon strip.
 
 ### 2. Central Workspace
 - **Chat View**:
-  - *Empty State*: Welcoming assistant banner with 6 clickable prompt cards (OOP Pillars, Polymorphism, Classes & Objects, Exception Handling, Collections, Internship Advice).
+  - *Empty State*: Welcoming banner with 6 clickable prompt cards (OOP Pillars, String & Immutability, Polymorphism, Python vs Java, Exception Handling, CodeAlpha Advice).
   - *Message List*: User messages formatted in electric-blue rounded pills; Assistant responses formatted in charcoal cards with intent badges, response latency, and markdown-styled code blocks.
   - *Code Blocks*: Custom syntax boxes with language badge and 1-click **Copy Code** button.
-  - *Typing Indicator*: Smooth, 3-dot animated pulse while the assistant processes queries in a background `SwingWorker` thread.
-  - *Input Area*: Multiline input supporting `Enter` to send, `Shift + Enter` for newlines, and clear conversation triggers.
+  - *Typing Indicator*: Smooth, 3-dot animated pulse while the assistant processes queries in a background thread.
+  - *Input Area*: Multiline input supporting `Enter` to send, `Shift + Enter` for newlines.
 - **Analytics Dashboard**:
   - 4 KPI cards: Total Conversations, Total User Messages, Total Assistant Responses, Average Response Time (ms).
   - 4 vector charts: Activity Over Time, Intent Distribution, Category Usage, and Response Quality.
@@ -56,18 +97,19 @@ The application window is organized into three balanced regions:
   - Add / Edit / Delete modal dialogs with input validation.
   - JSON import and export file dialogs.
 - **Settings & Personalization**:
+  - AI Model and Provider configuration with online status badge and connection testing.
   - Dark Navy vs. Light Studio theme switcher.
   - Font scaling: Compact (12pt), Standard (14pt), Comfortable (16pt).
-  - Confidence threshold slider (20% – 80%).
+  - Local NLP confidence threshold slider (20% – 80%).
   - Auto-scroll and message timestamp toggles.
   - Safety-confirmed conversation clearing and KB reset.
 
 ### 3. Right Context Panel (Collapsible)
+- Live AI Connection Status indicator (`● Online` vs. `○ Offline`).
 - Active conversation title and message counters.
 - Real-time detected intent badge and confidence progress meter.
 - Active knowledge base category and contextual topic summary.
 - Fast 1-click shortcut buttons (New Chat, Clear Messages).
-- Can be collapsed at any time to expand chat width.
 
 ---
 
@@ -92,7 +134,7 @@ Task3_AIChatbot/
 │   │   │   │   ├── Conversation.java          # Session container with message lists & tags
 │   │   │   │   ├── KnowledgeEntry.java        # Q&A data model with code snippets & follow-ups
 │   │   │   │   ├── IntentMatchResult.java     # Classification output with confidence metrics
-│   │   │   │   ├── UserSettings.java          # Preference model (theme, font, thresholds)
+│   │   │   │   ├── UserSettings.java          # Preference model (theme, font, LLM settings)
 │   │   │   │   └── AnalyticsSnapshot.java     # Immutable analytics model
 │   │   │   ├── nlp/
 │   │   │   │   ├── TextProcessor.java         # Normalization, tokenization, stemming
@@ -100,7 +142,8 @@ Task3_AIChatbot/
 │   │   │   │   ├── ContextManager.java        # Multi-turn conversational memory & follow-ups
 │   │   │   │   └── IntentClassifier.java      # Rule-based regex & weighted intent classifier
 │   │   │   ├── service/
-│   │   │   │   ├── ChatbotEngine.java         # Core response coordinator & fallback recovery
+│   │   │   │   ├── LlmService.java            # General-purpose OpenAI-compatible REST service
+│   │   │   │   ├── ChatbotEngine.java         # Hybrid response coordinator & fallback recovery
 │   │   │   │   ├── ConversationService.java   # Session lifecycle & auto-title generation
 │   │   │   │   ├── KnowledgeBaseService.java  # Q&A catalog, search, and import/export
 │   │   │   │   ├── AnalyticsService.java      # Telemetry calculations from stored data
@@ -120,23 +163,24 @@ Task3_AIChatbot/
 │   │   │           ├── ChatPanel.java         # Chat workspace, empty state & input area
 │   │   │           ├── MessageBubble.java     # Custom message card with code view & chips
 │   │   │           ├── CodeBlockView.java     # Syntax code box with 1-click copy
-│   │   │           ├── ContextPanel.java      # Collapsible right metadata & insights panel
+│   │   │           ├── ContextPanel.java      # Collapsible right metadata & AI status panel
 │   │   │           ├── DashboardPanel.java    # Visual KPIs & analytics charts panel
 │   │   │           ├── ModernChartPanel.java  # Vector Java2D charting engine (Area, Donut, Bar)
 │   │   │           ├── KpiCard.java           # Metric card with badge & hover glow
 │   │   │           ├── KnowledgeBasePanel.java# Q&A management table & modal dialogs
-│   │   │           ├── SettingsPanel.java     # Preferences, thresholds, & about info
+│   │   │           ├── SettingsPanel.java     # LLM config, thresholds, & about info
 │   │   │           └── TypingIndicator.java   # Animated 3-dot pulse indicator
 │   │   └── resources/
 │   │       └── knowledge-base/
-│   │           └── default_kb.json            # 18+ comprehensive seed Q&A entries
+│   │           └── default_kb.json            # 22+ comprehensive seed Q&A entries
 │   └── test/
 │       └── java/com/codealpha/chatbot/
+│           ├── LlmServiceTest.java            # Unit tests for key resolution & mock API parsing
 │           ├── TextProcessorTest.java         # Unit tests for text normalization & stemming
 │           ├── RelevanceScorerTest.java       # Unit tests for Jaccard & Levenshtein distance
 │           ├── IntentClassifierTest.java      # Unit tests for 21 intents & follow-ups
 │           ├── ContextManagerTest.java        # Unit tests for state tracking & turn memory
-│           ├── ChatbotEngineTest.java         # Integration tests for Q&A and fallbacks
+│           ├── ChatbotEngineTest.java         # Tests for Q&A, WHAT IS STRING, and fallbacks
 │           ├── KnowledgeBaseServiceTest.java  # Unit tests for CRUD, validation & duplicates
 │           ├── ConversationServiceTest.java   # Unit tests for sessions & title generation
 │           ├── AnalyticsServiceTest.java      # Unit tests for metric calculations
@@ -149,54 +193,14 @@ Task3_AIChatbot/
 
 ---
 
-## 🧠 NLP Implementation Details
+## 🛠️ Technology Stack & Dependencies
 
-The chatbot utilizes an explicit, transparent rule-based NLP pipeline:
-
-1. **Text Normalization**:
-   - Strips non-alphanumeric punctuation while safely preserving programming tokens (e.g. `do-while`, `C++`, `#`).
-   - Normalizes redundant whitespace and lowercases input.
-2. **Tokenization & Stop-Word Filtering**:
-   - Filters general conversational stop-words (*is, are, the, at, by*).
-   - **Crucially protects programming keywords**: tokens like `class`, `oop`, `java`, `variable`, `array`, `loop`, `inheritance`, `polymorphism`, `encapsulation`, `abstraction`, `exception`, `try`, `catch`, `finally`, `collection`, `file`, `git`, `maven` are never removed.
-3. **Intent Classification (21 Supported Intents)**:
-   - `Greetings`, `Introduction`, `General Help`
-   - `Java Programming`, `Object-Oriented Programming`
-   - `Variables and Data Types`, `Arrays and ArrayLists`
-   - `Loops and Conditions`, `Classes and Objects`
-   - `Inheritance`, `Polymorphism`, `Encapsulation`, `Abstraction`
-   - `Exception Handling`, `Collections`, `File Handling`
-   - `Study and College FAQs`, `Technology FAQs`
-   - `Thanks`, `Goodbye`, `Unknown or Unsupported Questions`
-4. **Relevance Scoring**:
-   - Calculates a weighted score $S \in [0.0, 1.0]$:
-     $$S = 0.55 \times \text{Recall} + 0.30 \times \text{Jaccard} + 0.15 \times \text{AnswerOverlap}$$
-   - Includes Wagner-Fischer Levenshtein distance matching to accommodate minor user typos (e.g., *"polymorfism"* matches *"polymorphism"*).
-5. **Multi-Turn Context Resolution**:
-   - Tracks the active topic across turns in `ContextManager`.
-   - When the user asks a follow-up:
-     - *"Give me an example"* $\rightarrow$ retrieves and formats the code snippet of the active topic.
-     - *"Explain it line by line"* $\rightarrow$ retrieves the sequential line-by-line breakdown of that snippet.
-     - *"Tell me more"* $\rightarrow$ retrieves deep-dive architectural context.
-
----
-
-## 💾 Local Storage & Reliability
-
-- Data is persisted locally in the `data/` directory using JSON.
-- **Atomic File Writing**: Writes changes to temporary files (`.tmp`) before performing an atomic filesystem move, preventing corruption during abrupt shutdowns.
-- **First-Run Seeding**: Automatically loads `default_kb.json` containing 18+ high quality Java concepts on initial run.
-- **Privacy & Safety**: Runtime data files in `data/` are strictly excluded via `.gitignore` to prevent committing user history or personal information.
-
----
-
-## 🛠️ Technology Stack
-
-| Component | Technology | Version | Purpose |
-| :--- | :--- | :--- | :--- |
-| **Language** | Java (JDK) | 17+ (Tested on Java 25) | Core application logic |
-| **GUI Framework** | Java Swing | Built-in | Desktop windowing and components |
-| **Look & Feel** | FormDev FlatLaf | 3.4.1 | Modern dark/light styling & High-DPI |
+| Component | Library / Framework | Version | Purpose |
+| :--- | :--- | :---: | :--- |
+| **Language** | Java SE (JDK) | 17+ | Core language platform |
+| **GUI Framework** | Java Swing | Built-in | Desktop GUI component architecture |
+| **Look & Feel** | FlatLaf (FormDev) | 3.4.1 | Clean modern desktop UI |
+| **HTTP Client** | `java.net.http.HttpClient` | Built-in | Asynchronous REST communication |
 | **JSON Parser** | Google Gson | 2.10.1 | Thread-safe data serialization |
 | **Vector Graphics** | Java2D (Graphics2D) | Built-in | Procedural antialiased icons & charts |
 | **Testing** | JUnit 5 Jupiter | 5.10.2 | Unit and integration testing |
@@ -208,7 +212,7 @@ The chatbot utilizes an explicit, transparent rule-based NLP pipeline:
 
 ### Prerequisites
 - **JDK 17 or higher** (Oracle JDK, OpenJDK, or Eclipse Temurin) installed.
-- **Apache Maven 3.8+** installed (or use the preconfigured Maven installation).
+- **Apache Maven 3.8+** installed.
 
 Verify your environment:
 ```bash
@@ -224,7 +228,7 @@ mvn clean compile
 ```
 
 ### 2. Run the Unit Test Suite
-Execute all 31 unit tests:
+Execute all 40 unit tests:
 ```bash
 mvn test
 ```
@@ -241,7 +245,6 @@ The executable fat JAR will be generated at:
 You can launch the chatbot using any of the following methods:
 
 **Option A — 1-Click Batch Script (Windows):**
-Double-click `run.bat` in the project directory, or run:
 ```cmd
 run.bat
 ```
@@ -258,86 +261,23 @@ mvn exec:java -Dexec.mainClass="com.codealpha.chatbot.Main"
 
 ---
 
-## 💬 Example Conversations
-
-### Example 1: Multi-Turn Context & Follow-Up
-```
-User:
-Explain Java classes and objects
-
-Assistant [Intent: Classes and Objects • 95% confidence • 18ms]:
-A Class is a user-defined blueprint or template from which individual objects
-are created. An Object is an active instance of that class residing in heap memory.
-...
-
-User:
-Give me an example
-
-Assistant [Intent: Classes and Objects • 95% confidence • 12ms]:
-Here is a code example for Explain Java classes and objects:
-```java
-public class Student {
-    private String name;
-    private int id;
-    ...
-}
-```
-
-User:
-Explain it line by line
-
-Assistant [Intent: Classes and Objects • 95% confidence • 14ms]:
-### Line-by-Line Breakdown: Explain Java classes and objects
-1. `public class Student`: Defines the class named Student.
-2. `private String name, id`: Encapsulated instance state fields.
-3. `public Student(String name, int id)`: Parameterized constructor initializes fields using `this`.
-4. `Student s1 = new Student("Raj", 101)`: Allocates object in heap memory.
-```
-
-### Example 2: Polymorphism & Clarification
-```
-User:
-polymorfism
-
-Assistant [Intent: Polymorphism • 85% confidence • 22ms]:
-Polymorphism means 'many forms'. It allows a single interface or method name
-to execute different behaviors depending on how it is called or which object invokes it.
-Two Types in Java:
-1. Compile-Time Polymorphism (Method Overloading)
-2. Runtime Polymorphism (Method Overriding)
-```
-
----
-
 ## 🧪 Verification & Test Results
 
-The project includes 9 dedicated test suites comprising 31 comprehensive unit tests:
+The project includes 10 test suites comprising **40 comprehensive unit tests**:
 
 | Test Class | Tests Run | Result | Coverage Area |
 | :--- | :---: | :---: | :--- |
+| `LlmServiceTest` | 6 | ✅ Pass | Key priority resolution, mock HTTP response, 401 & 429 error handling |
+| `ChatbotEngineTest` | 6 | ✅ Pass | Knowledge lookup, WHAT IS STRING matching, multi-turn follow-ups, offline guidance |
 | `TextProcessorTest` | 4 | ✅ Pass | Normalization, tokenization, keyword preservation, follow-up detection |
 | `RelevanceScorerTest` | 3 | ✅ Pass | Exact match scoring, Levenshtein fuzzy typos, negative filtering |
 | `IntentClassifierTest` | 5 | ✅ Pass | 21 intents, greetings, KB matching, follow-ups, fallback recovery |
 | `ContextManagerTest` | 3 | ✅ Pass | State initialization, topic tracking, reset behavior |
-| `ChatbotEngineTest` | 3 | ✅ Pass | End-to-end processing, multi-turn follow-up chain, fallback messages |
 | `KnowledgeBaseServiceTest` | 5 | ✅ Pass | CRUD operations, duplicate prevention, empty field validation, search |
 | `ConversationServiceTest` | 4 | ✅ Pass | Session switching, message persistence, auto-title generation, pinning |
 | `AnalyticsServiceTest` | 1 | ✅ Pass | KPI calculations, intent distribution tallies, average response times |
 | `JsonStorageServiceTest` | 3 | ✅ Pass | Isolated JSON persistence for settings, sessions, and knowledge entries |
-| **Total** | **31** | **✅ All 31 Passed (0 Failures, 0 Errors)** |
-
----
-
-## 📌 Limitations & Future Enhancements
-
-### Limitations
-- The initial NLP engine is rule-based and knowledge-base backed, designed to provide accurate, deterministic answers to Java and OOP programming topics without hallucinating. It does not utilize an external cloud LLM API by default to maintain zero external network dependencies and offline capability.
-- Multi-turn context memory is focused on recent conversational topics, follow-up examples, and line-by-line code breakdowns.
-
-### Future Enhancements
-- Integration of local ONNX models or optional OpenAI/Gemini API endpoints for open-ended conversational generation.
-- Full syntax highlighting token styling for Java code blocks within Swing.
-- Audio speech synthesis (Text-to-Speech) for voice-assisted explanations.
+| **Total** | **40** | **✅ All 40 Passed (0 Failures, 0 Errors)** |
 
 ---
 
@@ -345,5 +285,6 @@ The project includes 9 dedicated test suites comprising 31 comprehensive unit te
 
 - **Internship**: CodeAlpha Java Programming Internship
 - **Task**: Task 3 - Artificial Intelligence Chatbot
+- **Application**: RAJ AI
 - **Developer**: Kumar Raj (`krraj505@gmail.com`)
-- **Submission Repository**: `codealpha_tasks/Task3_AIChatbot`
+- **Submission Repository**: https://github.com/krraj505/codealpha_tasks

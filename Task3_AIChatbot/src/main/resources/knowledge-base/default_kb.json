@@ -214,5 +214,53 @@
     "followUpLineByLine": "Session completed.",
     "usageCount": 0,
     "lastUpdated": 1728518400000
+  },
+  {
+    "id": "kb-019",
+    "category": "Java Core",
+    "question": "What is String in Java and why is it immutable?",
+    "answer": "In Java, a `String` is an object representing a sequence of characters. It is defined in `java.lang.String` and backed by a char/byte array.\n\nKey Concepts:\n• **Immutability**: Once created, a `String` object's character content cannot be altered. Any operation that appears to modify it (such as `concat()` or `replace()`) actually produces a new `String` object in heap memory.\n• **String Constant Pool (SCP)**: A special memory zone inside the Java Heap where literal strings are cached and deduplicated to reduce memory overhead.\n• **Why Immutability Matters**:\n  1. **Security**: Strings are widely used for sensitive data such as file paths, network URLs, and database credentials. Immutability prevents tampering.\n  2. **Thread-Safety**: Immutable objects can be shared safely across threads without synchronization.\n  3. **Caching & Hash Consistency**: The hashCode of a String is computed once and cached, making Strings ideal keys for `HashMap` and `HashSet`.\n• **Mutable Alternatives**: For extensive string manipulation, use `StringBuilder` (high performance, non-thread-safe) or `StringBuffer` (synchronized, thread-safe).",
+    "keywords": ["string", "strings", "what is string", "what is a string", "immutability", "immutable", "string pool", "scp", "stringbuilder", "stringbuffer"],
+    "tags": ["string", "immutability", "java core"],
+    "followUpExample": "public class StringDemo {\n    public static void main(String[] args) {\n        // String literal - stored in String Constant Pool\n        String s1 = \"CodeAlpha\";\n        String s2 = \"CodeAlpha\";\n        System.out.println(s1 == s2); // true: refers to identical pooled object\n\n        // Immutability demonstration\n        s1.concat(\" Internship\");\n        System.out.println(s1); // Still \"CodeAlpha\" because Strings cannot change in place\n\n        // Proper reassignment\n        s1 = s1.concat(\" Internship\");\n        System.out.println(s1); // \"CodeAlpha Internship\"\n    }\n}",
+    "followUpLineByLine": "1. `String s1 = \"CodeAlpha\"`: Checks SCP; assigns reference to pooled literal.\n2. `s1 == s2`: Evaluates to `true` because string literals are deduplicated.\n3. `s1.concat(\" Internship\")`: Creates a new String instance without altering `s1`.\n4. `s1 = s1.concat(...)`: Reassigns reference pointer to newly allocated object.",
+    "usageCount": 0,
+    "lastUpdated": 1728518400000
+  },
+  {
+    "id": "kb-020",
+    "category": "Technology",
+    "question": "Compare Python and Java for software and AI development",
+    "answer": "Both Java and Python are top-tier industry languages, each with distinct strengths:\n\n• **Java**:\n  - Statically typed, compiled to bytecode running on the JVM.\n  - High execution speed and strong memory management.\n  - Industry standard for enterprise backends, Android, financial systems, and large-scale microservices.\n\n• **Python**:\n  - Dynamically typed, interpreted, with clean and readable syntax.\n  - Dominate ecosystem for Artificial Intelligence, Machine Learning, and Data Science (NumPy, PyTorch, TensorFlow, scikit-learn).\n  - Fast prototyping and scripting.\n\n• **Summary**: Use Java for robust, high-performance production systems; use Python for AI/ML modeling, rapid scripting, and data analytics.",
+    "keywords": ["python", "python vs java", "compare python and java", "python programming", "data science"],
+    "tags": ["python", "comparison", "languages"],
+    "followUpExample": "# Python concise syntax vs Java verbosity\ndef greet(name: str) -> str:\n    return f\"Hello, {name}!\"\n\nprint(greet(\"Raj\"))",
+    "followUpLineByLine": "1. `def greet(...)`: Python function definition with optional type hints.\n2. `f\"Hello, {name}!\"`: Formatted f-string for string interpolation.\n3. Dynamic typing enables rapid prototyping compared to Java static declarations.",
+    "usageCount": 0,
+    "lastUpdated": 1728518400000
+  },
+  {
+    "id": "kb-021",
+    "category": "Technology",
+    "question": "What is Artificial Intelligence and Machine Learning?",
+    "answer": "• **Artificial Intelligence (AI)**: The broad discipline of computer science dedicated to creating systems capable of performing tasks that typically require human intelligence, such as reasoning, problem-solving, natural language understanding, and perception.\n\n• **Machine Learning (ML)**: A primary subset of AI where algorithms learn patterns from data and improve their performance iteratively without being explicitly programmed.\n  - Supervised Learning: Learning with labeled inputs/outputs (classification, regression).\n  - Unsupervised Learning: Discovering hidden patterns in unlabeled data (clustering, PCA).\n  - Reinforcement Learning: Agents learning optimal policies via rewards and penalties.\n\n• **Deep Learning (DL) & LLMs**: Neural networks with multiple layers powering modern Large Language Models (LLMs like GPT, Llama, Gemini) and computer vision.",
+    "keywords": ["ai", "artificial intelligence", "machine learning", "ml", "deep learning", "llm", "neural network"],
+    "tags": ["ai", "machine learning", "data science"],
+    "followUpExample": "// High-level conceptual pseudo-code for AI Inference\npublic class ModelInference {\n    public static double predict(double[] features, double[] weights, double bias) {\n        double dotProduct = 0.0;\n        for (int i = 0; i < features.length; i++) {\n            dotProduct += features[i] * weights[i];\n        }\n        return 1.0 / (1.0 + Math.exp(-(dotProduct + bias))); // Sigmoid activation\n    }\n}",
+    "followUpLineByLine": "1. `features[]` & `weights[]`: Linear combination of inputs with trained weights.\n2. `Math.exp(...)`: Logistic sigmoid mapping output to a probability range [0, 1].\n3. Basis of linear regression and artificial neural nodes.",
+    "usageCount": 0,
+    "lastUpdated": 1728518400000
+  },
+  {
+    "id": "kb-022",
+    "category": "Technology",
+    "question": "What is a REST API and JSON?",
+    "answer": "• **REST (Representational State Transfer)**: An architectural design for web APIs relying on stateless client-server communication using standard HTTP methods:\n  - `GET`: Retrieve resources\n  - `POST`: Create a new resource\n  - `PUT`/`PATCH`: Update existing resources\n  - `DELETE`: Remove a resource\n\n• **JSON (JavaScript Object Notation)**: The universal lightweight data interchange format used in REST APIs.\n  - Human-readable key-value formatting.\n  - Native support across Java (via Gson, Jackson), Python (via json), and JavaScript (via JSON.parse).",
+    "keywords": ["rest", "api", "rest api", "json", "http", "endpoints", "web services"],
+    "tags": ["web", "api", "rest"],
+    "followUpExample": "GET /api/v1/users/101 HTTP/1.1\nHost: api.example.com\nAccept: application/json\n\n// Response JSON\n{\n  \"id\": 101,\n  \"name\": \"Raj Yadav\",\n  \"role\": \"Software Engineer\"\n}",
+    "followUpLineByLine": "1. `GET /api/v1/users/101`: Standardized RESTful URI specifying resource and ID.\n2. `Accept: application/json`: Content-type negotiation for JSON serialization.\n3. Response body returns compact, structured key-value data.",
+    "usageCount": 0,
+    "lastUpdated": 1728518400000
   }
 ]

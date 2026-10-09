@@ -14,6 +14,14 @@ public class UserSettings {
     private boolean soundEnabled;
     private boolean sidebarCollapsed;
 
+    // General-purpose AI / LLM Integration Settings
+    private boolean enableLlm;
+    private String llmProvider;
+    private String llmModel;
+    private String llmBaseUrl;
+    private String llmApiKeyOverride;
+    private boolean preferOnlineAi;
+
     public UserSettings() {
         this.theme = "DARK";
         this.fontSize = 14;
@@ -24,6 +32,13 @@ public class UserSettings {
         this.userName = "Raj";
         this.soundEnabled = false;
         this.sidebarCollapsed = false;
+
+        this.enableLlm = true;
+        this.llmProvider = "OpenAI Compatible";
+        this.llmModel = "gpt-4o-mini";
+        this.llmBaseUrl = "https://api.openai.com/v1/chat/completions";
+        this.llmApiKeyOverride = "";
+        this.preferOnlineAi = false;
     }
 
     public String getTheme() {
@@ -100,5 +115,53 @@ public class UserSettings {
 
     public void setSidebarCollapsed(boolean sidebarCollapsed) {
         this.sidebarCollapsed = sidebarCollapsed;
+    }
+
+    public boolean isEnableLlm() {
+        return enableLlm;
+    }
+
+    public void setEnableLlm(boolean enableLlm) {
+        this.enableLlm = enableLlm;
+    }
+
+    public String getLlmProvider() {
+        return llmProvider != null ? llmProvider : "OpenAI Compatible";
+    }
+
+    public void setLlmProvider(String llmProvider) {
+        this.llmProvider = llmProvider;
+    }
+
+    public String getLlmModel() {
+        return (llmModel != null && !llmModel.isBlank()) ? llmModel : "gpt-4o-mini";
+    }
+
+    public void setLlmModel(String llmModel) {
+        this.llmModel = llmModel;
+    }
+
+    public String getLlmBaseUrl() {
+        return (llmBaseUrl != null && !llmBaseUrl.isBlank()) ? llmBaseUrl : "https://api.openai.com/v1/chat/completions";
+    }
+
+    public void setLlmBaseUrl(String llmBaseUrl) {
+        this.llmBaseUrl = llmBaseUrl;
+    }
+
+    public String getLlmApiKeyOverride() {
+        return llmApiKeyOverride != null ? llmApiKeyOverride : "";
+    }
+
+    public void setLlmApiKeyOverride(String llmApiKeyOverride) {
+        this.llmApiKeyOverride = llmApiKeyOverride;
+    }
+
+    public boolean isPreferOnlineAi() {
+        return preferOnlineAi;
+    }
+
+    public void setPreferOnlineAi(boolean preferOnlineAi) {
+        this.preferOnlineAi = preferOnlineAi;
     }
 }

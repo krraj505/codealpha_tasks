@@ -3,6 +3,7 @@ package com.codealpha.chatbot.ui.components;
 import com.codealpha.chatbot.model.UserSettings;
 import com.codealpha.chatbot.service.ConversationService;
 import com.codealpha.chatbot.service.KnowledgeBaseService;
+import com.codealpha.chatbot.service.LlmService;
 import com.codealpha.chatbot.service.SettingsService;
 import com.codealpha.chatbot.storage.JsonStorageService;
 import com.codealpha.chatbot.ui.theme.ColorPalette;
@@ -14,7 +15,8 @@ import java.awt.*;
 
 /**
  * Settings and Personalization page for theme customization, font scaling,
- * AI confidence thresholds, data clearing, and internship metadata.
+ * general-purpose AI / LLM configuration, NLP matching parameters,
+ * data clearing, and internship metadata.
  */
 public class SettingsPanel extends JPanel {
 
@@ -22,6 +24,7 @@ public class SettingsPanel extends JPanel {
     private final ConversationService conversationService;
     private final KnowledgeBaseService kbService;
     private final JsonStorageService storageService;
+    private final LlmService llmService;
     private final Runnable onThemeChanged;
 
     private JRadioButton darkRadio;
@@ -32,15 +35,35 @@ public class SettingsPanel extends JPanel {
     private JCheckBox autoScrollCheck;
     private JCheckBox timestampsCheck;
 
+    // AI Configuration Elements
+    private JLabel aiStatusLabel;
+    private JLabel aiSourceLabel;
+    private JComboBox<String> providerCombo;
+    private JTextField modelField;
+    private JTextField baseUrlField;
+    private JPasswordField apiKeyField;
+    private JCheckBox preferOnlineCheck;
+    private JButton testConnectionBtn;
+
     public SettingsPanel(SettingsService settingsService,
                          ConversationService conversationService,
                          KnowledgeBaseService kbService,
                          JsonStorageService storageService,
                          Runnable onThemeChanged) {
+        this(settingsService, conversationService, kbService, storageService, new LlmService(settingsService), onThemeChanged);
+    }
+
+    public SettingsPanel(SettingsService settingsService,
+                         ConversationService conversationService,
+                         KnowledgeBaseService kbService,
+                         JsonStorageService storageService,
+                         LlmService llmService,
+                         Runnable onThemeChanged) {
         this.settingsService = settingsService;
         this.conversationService = conversationService;
         this.kbService = kbService;
         this.storageService = storageService;
+        this.llmService = llmService;
         this.onThemeChanged = onThemeChanged;
 
         setLayout(new BorderLayout());
@@ -67,7 +90,7 @@ public class SettingsPanel extends JPanel {
         pageTitle.setFont(ThemeManager.getInstance().getLargeTitleFont());
         pageTitle.setForeground(palette.textPrimary);
 
-        JLabel pageSubtitle = new JLabel("Customize visual styling, font scaling, and AI response parameters");
+        JLabel pageSubtitle = new JLabel("Customize visual styling, general AI models, and NLP response parameters");
         pageSubtitle.setFont(ThemeManager.getInstance().getSmallFont());
         pageSubtitle.setForeground(palette.textSecondary);
 
@@ -77,7 +100,197 @@ public class SettingsPanel extends JPanel {
         container.add(titleBlock);
         container.add(Box.createRigidArea(new Dimension(0, 20)));
 
-        // 1. APPEARANCE CARD
+        // 1. GENERAL-PURPOSE AI / LLM CONFIGURATION CARD
+        JPanel aiModelCard = createCard("General-Purpose AI & Model Configuration");
+        aiModelCard.setMaximumSize(new Dimension(Integer.MAX_VALUE, 500));
+
+        // Status Header Row
+        JPanel statusRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 4));
+        statusRow.setOpaque(false);
+
+        boolean isConfigured = llmService.isConfigured();
+        aiStatusLabel = new JLabel(isConfigured ? "● Online (AI Connected)" : "○ Offline (Knowledge Base Mode)");
+        aiStatusLabel.setFont(ThemeManager.getInstance().getBoldFont());
+        aiStatusLabel.setForeground(isConfigured ? new Color(16, 185, 129) : new Color(245, 158, 11));
+
+        aiSourceLabel = new JLabel("Key: " + llmService.getKeySource() + " [" + llmService.getMaskedApiKey() + "]");
+        aiSourceLabel.setFont(ThemeManager.getInstance().getSmallFont());
+        aiSourceLabel.setForeground(palette.textSecondary);
+
+        statusRow.add(aiStatusLabel);
+        statusRow.add(aiSourceLabel);
+        aiModelCard.add(statusRow);
+        aiModelCard.add(Box.createRigidArea(new Dimension(0, 10)));
+
+        // Provider Selector
+        JPanel providerRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 4));
+        providerRow.setOpaque(false);
+        JLabel provLbl = new JLabel("AI Provider:");
+        provLbl.setFont(ThemeManager.getInstance().getRegularFont());
+        provLbl.setForeground(palette.textPrimary);
+
+        providerCombo = new JComboBox<>(new String[]{
+                "OpenAI (Official)",
+                "Groq Cloud (Fast & Free Tier)",
+                "OpenRouter (Multi-Model)",
+                "Ollama (Local Self-Hosted)",
+                "Custom OpenAI-Compatible"
+        });
+        providerCombo.setFont(ThemeManager.getInstance().getRegularFont());
+
+        providerRow.add(provLbl);
+        providerRow.add(providerCombo);
+        aiModelCard.add(providerRow);
+        aiModelCard.add(Box.createRigidArea(new Dimension(0, 6)));
+
+        // Model and Endpoint Inputs
+        JPanel configGrid = new JPanel(new GridLayout(3, 2, 10, 8));
+        configGrid.setOpaque(false);
+        configGrid.setMaximumSize(new Dimension(Integer.MAX_VALUE, 110));
+
+        JLabel modelLbl = new JLabel("Model Name:");
+        modelLbl.setForeground(palette.textPrimary);
+        modelField = new JTextField(current.getLlmModel());
+        modelField.setFont(ThemeManager.getInstance().getRegularFont());
+
+        JLabel urlLbl = new JLabel("API Base URL:");
+        urlLbl.setForeground(palette.textPrimary);
+        baseUrlField = new JTextField(current.getLlmBaseUrl());
+        baseUrlField.setFont(ThemeManager.getInstance().getRegularFont());
+
+        JLabel keyLbl = new JLabel("Manual API Key (Optional):");
+        keyLbl.setForeground(palette.textPrimary);
+        apiKeyField = new JPasswordField(current.getLlmApiKeyOverride());
+        apiKeyField.setFont(ThemeManager.getInstance().getRegularFont());
+
+        configGrid.add(modelLbl);
+        configGrid.add(modelField);
+        configGrid.add(urlLbl);
+        configGrid.add(baseUrlField);
+        configGrid.add(keyLbl);
+        configGrid.add(apiKeyField);
+
+        aiModelCard.add(configGrid);
+        aiModelCard.add(Box.createRigidArea(new Dimension(0, 10)));
+
+        // Provider change auto-populates defaults
+        providerCombo.addActionListener(e -> {
+            int idx = providerCombo.getSelectedIndex();
+            if (idx == 0) { // OpenAI
+                modelField.setText("gpt-4o-mini");
+                baseUrlField.setText("https://api.openai.com/v1/chat/completions");
+            } else if (idx == 1) { // Groq
+                modelField.setText("llama-3.3-70b-versatile");
+                baseUrlField.setText("https://api.groq.com/openai/v1/chat/completions");
+            } else if (idx == 2) { // OpenRouter
+                modelField.setText("meta-llama/llama-3.3-70b-instruct");
+                baseUrlField.setText("https://openrouter.ai/api/v1/chat/completions");
+            } else if (idx == 3) { // Ollama
+                modelField.setText("llama3.2");
+                baseUrlField.setText("http://localhost:11434/v1/chat/completions");
+            }
+        });
+
+        // Online Preference Checkbox
+        preferOnlineCheck = new JCheckBox("Prefer Online AI for all queries (Skip local KB check)", current.isPreferOnlineAi());
+        preferOnlineCheck.setOpaque(false);
+        preferOnlineCheck.setFont(ThemeManager.getInstance().getRegularFont());
+        preferOnlineCheck.setForeground(palette.textPrimary);
+        aiModelCard.add(preferOnlineCheck);
+        aiModelCard.add(Box.createRigidArea(new Dimension(0, 10)));
+
+        // Action Buttons Row: Save AI Config & Test Connection
+        JPanel aiBtnRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 4));
+        aiBtnRow.setOpaque(false);
+
+        JButton saveAiBtn = new JButton("Save AI Configuration");
+        saveAiBtn.setFont(ThemeManager.getInstance().getRegularFont());
+        saveAiBtn.addActionListener(e -> {
+            current.setLlmProvider((String) providerCombo.getSelectedItem());
+            current.setLlmModel(modelField.getText().trim());
+            current.setLlmBaseUrl(baseUrlField.getText().trim());
+            current.setLlmApiKeyOverride(new String(apiKeyField.getPassword()).trim());
+            current.setPreferOnlineAi(preferOnlineCheck.isSelected());
+            settingsService.updateSettings(current);
+
+            boolean cfg = llmService.isConfigured();
+            aiStatusLabel.setText(cfg ? "● Online (AI Connected)" : "○ Offline (Knowledge Base Mode)");
+            aiStatusLabel.setForeground(cfg ? new Color(16, 185, 129) : new Color(245, 158, 11));
+            aiSourceLabel.setText("Key: " + llmService.getKeySource() + " [" + llmService.getMaskedApiKey() + "]");
+
+            JOptionPane.showMessageDialog(this,
+                    "AI Configuration saved successfully!\nKey Source: " + llmService.getKeySource(),
+                    "Configuration Saved", JOptionPane.INFORMATION_MESSAGE);
+        });
+
+        testConnectionBtn = new JButton("Test AI Connection");
+        testConnectionBtn.setFont(ThemeManager.getInstance().getRegularFont());
+        testConnectionBtn.addActionListener(e -> {
+            // Apply current textfield values temporarily for testing
+            current.setLlmModel(modelField.getText().trim());
+            current.setLlmBaseUrl(baseUrlField.getText().trim());
+            current.setLlmApiKeyOverride(new String(apiKeyField.getPassword()).trim());
+            settingsService.updateSettings(current);
+
+            testConnectionBtn.setEnabled(false);
+            testConnectionBtn.setText("Testing...");
+
+            SwingWorker<LlmService.LlmResponse, Void> testWorker = new SwingWorker<>() {
+                @Override
+                protected LlmService.LlmResponse doInBackground() {
+                    return llmService.testConnection();
+                }
+
+                @Override
+                protected void done() {
+                    testConnectionBtn.setEnabled(true);
+                    testConnectionBtn.setText("Test AI Connection");
+                    try {
+                        LlmService.LlmResponse resp = get();
+                        if (resp.isSuccess()) {
+                            boolean cfg = llmService.isConfigured();
+                            aiStatusLabel.setText(cfg ? "● Online (AI Connected)" : "○ Offline (Knowledge Base Mode)");
+                            aiStatusLabel.setForeground(new Color(16, 185, 129));
+                            aiSourceLabel.setText("Key: " + llmService.getKeySource() + " [" + llmService.getMaskedApiKey() + "]");
+
+                            JOptionPane.showMessageDialog(SettingsPanel.this,
+                                    "Success! RAJ AI connected to " + resp.getModelUsed() + " in " + resp.getLatencyMs() + "ms.\nResponse: " + resp.getContent(),
+                                    "Connection Test Passed", JOptionPane.INFORMATION_MESSAGE);
+                        } else {
+                            JOptionPane.showMessageDialog(SettingsPanel.this,
+                                    "Connection Failed:\n" + resp.getErrorMessage(),
+                                    "Connection Test Failed", JOptionPane.ERROR_MESSAGE);
+                        }
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(SettingsPanel.this,
+                                "Test execution error: " + ex.getMessage(),
+                                "Test Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+            };
+            testWorker.execute();
+        });
+
+        aiBtnRow.add(saveAiBtn);
+        aiBtnRow.add(testConnectionBtn);
+        aiModelCard.add(aiBtnRow);
+        aiModelCard.add(Box.createRigidArea(new Dimension(0, 10)));
+
+        // Setup Guide snippet
+        String guideHtml = "<html><body style='width: 520px; font-family: Segoe UI; font-size: 11px;'>"
+                + "<p><b>Environment Variable Setup Guide:</b></p>"
+                + "<p>• <b>Windows:</b> <code>setx AI_API_KEY \"your_key\"</code> or <code>setx OPENAI_API_KEY \"your_key\"</code></p>"
+                + "<p>• <b>Groq (Free):</b> <code>setx GROQ_API_KEY \"gsk_...\"</code> (fastest inference)</p>"
+                + "<p>• Or type your key in <i>Manual API Key</i> above and click <i>Save AI Configuration</i>.</p>"
+                + "</body></html>";
+        JLabel guideLabel = new JLabel(guideHtml);
+        guideLabel.setForeground(palette.textMuted);
+        aiModelCard.add(guideLabel);
+
+        container.add(aiModelCard);
+        container.add(Box.createRigidArea(new Dimension(0, 16)));
+
+        // 2. APPEARANCE CARD
         JPanel appearanceCard = createCard("Visual Appearance & Themes");
 
         JPanel themeRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 16, 4));
@@ -138,14 +351,14 @@ public class SettingsPanel extends JPanel {
         container.add(appearanceCard);
         container.add(Box.createRigidArea(new Dimension(0, 16)));
 
-        // 2. AI ENGINE PARAMETERS CARD
-        JPanel aiCard = createCard("AI Engine & NLP Parameters");
+        // 3. NLP MATCHING & CHAT PREFERENCES CARD
+        JPanel nlpCard = createCard("Local NLP Matching & Chat Preferences");
 
         JPanel threshRow = new JPanel(new BorderLayout(12, 0));
         threshRow.setOpaque(false);
 
         int currentPct = (int) Math.round(current.getConfidenceThreshold() * 100);
-        thresholdLabel = new JLabel("Confidence Match Threshold: " + currentPct + "%");
+        thresholdLabel = new JLabel("Local Knowledge Base Match Threshold: " + currentPct + "%");
         thresholdLabel.setFont(ThemeManager.getInstance().getRegularFont());
         thresholdLabel.setForeground(palette.textPrimary);
 
@@ -156,15 +369,15 @@ public class SettingsPanel extends JPanel {
         thresholdSlider.setPaintTicks(true);
         thresholdSlider.addChangeListener(e -> {
             int val = thresholdSlider.getValue();
-            thresholdLabel.setText("Confidence Match Threshold: " + val + "%");
+            thresholdLabel.setText("Local Knowledge Base Match Threshold: " + val + "%");
             settingsService.setConfidenceThreshold(val / 100.0);
         });
 
         threshRow.add(thresholdLabel, BorderLayout.NORTH);
         threshRow.add(thresholdSlider, BorderLayout.CENTER);
 
-        aiCard.add(threshRow);
-        aiCard.add(Box.createRigidArea(new Dimension(0, 10)));
+        nlpCard.add(threshRow);
+        nlpCard.add(Box.createRigidArea(new Dimension(0, 10)));
 
         autoScrollCheck = new JCheckBox("Auto-scroll to latest response", current.isAutoScroll());
         autoScrollCheck.setOpaque(false);
@@ -180,13 +393,13 @@ public class SettingsPanel extends JPanel {
             settingsService.updateSettings(current);
         });
 
-        aiCard.add(autoScrollCheck);
-        aiCard.add(timestampsCheck);
+        nlpCard.add(autoScrollCheck);
+        nlpCard.add(timestampsCheck);
 
-        container.add(aiCard);
+        container.add(nlpCard);
         container.add(Box.createRigidArea(new Dimension(0, 16)));
 
-        // 3. DATA & STORAGE MANAGEMENT CARD
+        // 4. DATA & STORAGE MANAGEMENT CARD
         JPanel dataCard = createCard("Data Storage & Maintenance");
 
         JPanel dataBtnRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 4));
@@ -226,18 +439,18 @@ public class SettingsPanel extends JPanel {
         container.add(dataCard);
         container.add(Box.createRigidArea(new Dimension(0, 16)));
 
-        // 4. ABOUT CARD
+        // 5. ABOUT CARD
         JPanel aboutCard = createCard("About RAJ AI");
 
         String infoHtml = "<html><body style='width: 520px; font-family: Segoe UI;'>"
-                + "<p><b>RAJ AI — Java Programming Assistant</b></p>"
+                + "<p><b>RAJ AI — General-Purpose Desktop AI Assistant</b></p>"
                 + "<p>A modern desktop AI companion designed and implemented for the <b>CodeAlpha Java Programming Internship (Task 3)</b>.</p>"
                 + "<br/>"
                 + "<p>• <b>Application:</b> RAJ AI</p>"
                 + "<p>• <b>Developer:</b> Kumar Raj</p>"
                 + "<p>• <b>Runtime:</b> Java 17+ (Swing GUI & FlatLaf Engine)</p>"
                 + "<p>• <b>Architecture:</b> Modular Layered Model-Service-UI Architecture</p>"
-                + "<p>• <b>NLP Engine:</b> Rule-based intent classifier, multi-turn context tracking, and semantic relevance scoring</p>"
+                + "<p>• <b>AI Engine:</b> Hybrid general-purpose LLM integration with local NLP intent classifier and semantic relevance scoring</p>"
                 + "<p>• <b>Persistence:</b> Local thread-safe atomic JSON storage</p>"
                 + "</body></html>";
 
@@ -278,7 +491,7 @@ public class SettingsPanel extends JPanel {
         card.setOpaque(false);
         card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
         card.setBorder(BorderFactory.createEmptyBorder(14, 18, 16, 18));
-        card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 240));
+        card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 260));
 
         JLabel t = new JLabel(title);
         t.setFont(ThemeManager.getInstance().getBoldFont());
