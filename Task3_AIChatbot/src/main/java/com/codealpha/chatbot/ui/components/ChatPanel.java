@@ -182,15 +182,15 @@ public class ChatPanel extends JPanel {
         emptyStatePanel.setBorder(BorderFactory.createEmptyBorder(30, 20, 20, 20));
         emptyStatePanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JLabel iconLabel = new JLabel(UiUtils.createRobotIcon(54, palette.accentPrimary));
+        JLabel iconLabel = new JLabel(UiUtils.createRajAiLogo(64));
         iconLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JLabel titleLabel = new JLabel("Welcome to CodeAlpha AI Assistant");
+        JLabel titleLabel = new JLabel("Welcome to RAJ AI");
         titleLabel.setFont(ThemeManager.getInstance().getLargeTitleFont());
         titleLabel.setForeground(palette.textPrimary);
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JLabel subtitleLabel = new JLabel("Your intelligent companion for Java programming, OOP mastery, and internship guidance.");
+        JLabel subtitleLabel = new JLabel("Your intelligent companion for Java programming, OOP mastery, and technical learning.");
         subtitleLabel.setFont(ThemeManager.getInstance().getRegularFont());
         subtitleLabel.setForeground(palette.textSecondary);
         subtitleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);

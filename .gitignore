@@ -9,6 +9,8 @@ target/
 .classpath
 .project
 .settings/
+bin/
+**/bin/
 
 # Runtime persistence data
 **/data/

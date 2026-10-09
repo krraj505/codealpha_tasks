@@ -178,6 +178,62 @@ public class UiUtils {
         });
     }
 
+    public static Icon createRajAiLogo(int size, Color primary, Color accent) {
+        return new ProceduralIcon(size, size, (g2, w, h) -> {
+            float pad = Math.max(1.5f, w * 0.05f);
+            float innerW = w - (2 * pad);
+            float innerH = h - (2 * pad);
+
+            // Sleek rounded container background with gradient
+            RoundRectangle2D bg = new RoundRectangle2D.Float(pad, pad, innerW, innerH, w * 0.28f, h * 0.28f);
+            GradientPaint gp = new GradientPaint(
+                    pad, pad, primary,
+                    w - pad, h - pad, accent != null ? accent : primary
+            );
+            g2.setPaint(gp);
+            g2.fill(bg);
+
+            // Subtle border glow
+            g2.setColor(new Color(255, 255, 255, 60));
+            g2.setStroke(new BasicStroke(Math.max(1f, w * 0.04f)));
+            g2.draw(bg);
+
+            // Stylized 'R' Lettermark
+            g2.setColor(Color.WHITE);
+            float strokeW = Math.max(1.8f, w * 0.11f);
+            g2.setStroke(new BasicStroke(strokeW, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+
+            float x0 = w * 0.31f;
+            float x1 = w * 0.62f;
+            float y0 = h * 0.26f;
+            float yMid = h * 0.54f;
+            float yBottom = h * 0.74f;
+
+            // Vertical spine of 'R'
+            g2.draw(new Line2D.Float(x0, y0, x0, yBottom));
+
+            // Upper bowl of 'R'
+            Path2D bowl = new Path2D.Float();
+            bowl.moveTo(x0, y0);
+            bowl.curveTo(x1 + (w * 0.06f), y0, x1 + (w * 0.06f), yMid, x0, yMid);
+            g2.draw(bowl);
+
+            // Diagonal leg of 'R'
+            float legStartX = x0 + (w * 0.04f);
+            float legStartY = yMid - (h * 0.02f);
+            g2.draw(new Line2D.Float(legStartX, legStartY, x1, yBottom));
+
+            // AI Accent dot on top right
+            float dotR = Math.max(2.2f, w * 0.07f);
+            g2.setColor(new Color(255, 255, 255, 230));
+            g2.fill(new Ellipse2D.Float(w * 0.71f - dotR / 2f, h * 0.26f - dotR / 2f, dotR, dotR));
+        });
+    }
+
+    public static Icon createRajAiLogo(int size) {
+        return createRajAiLogo(size, new Color(0x3B, 0x82, 0xF6), new Color(0x8B, 0x5C, 0xF6));
+    }
+
     public static Icon createRobotIcon(int size, Color color) {
         return new ProceduralIcon(size, size, (g2, w, h) -> {
             g2.setColor(color);

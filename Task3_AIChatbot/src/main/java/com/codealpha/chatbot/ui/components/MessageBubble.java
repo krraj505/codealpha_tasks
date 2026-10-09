@@ -103,14 +103,8 @@ public class MessageBubble extends JPanel {
                 UiUtils.setRenderingHints(g2);
                 ColorPalette p = ThemeManager.getInstance().getPalette();
 
-                g2.setColor(new Color(p.accentPrimary.getRed(), p.accentPrimary.getGreen(), p.accentPrimary.getBlue(), 35));
-                g2.fillOval(0, 0, 32, 32);
-                g2.setColor(p.accentPrimary);
-                g2.setStroke(new BasicStroke(1.2f));
-                g2.drawOval(0, 0, 32, 32);
-
-                Icon icon = UiUtils.createRobotIcon(18, p.accentPrimary);
-                icon.paintIcon(this, g2, 7, 7);
+                Icon icon = UiUtils.createRajAiLogo(28);
+                icon.paintIcon(this, g2, 2, 2);
                 g2.dispose();
             }
         };

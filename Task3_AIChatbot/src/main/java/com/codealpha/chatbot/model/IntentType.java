@@ -1,7 +1,7 @@
 package com.codealpha.chatbot.model;
 
 /**
- * Enumeration of all recognized intents supported by the CodeAlpha AI Chatbot.
+ * Enumeration of all recognized intents supported by RAJ AI.
  */
 public enum IntentType {
     GREETINGS("Greetings", "Conversational", "User greets the chatbot"),

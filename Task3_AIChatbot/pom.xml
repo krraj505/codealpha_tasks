@@ -10,8 +10,8 @@
     <version>1.0.0</version>
     <packaging>jar</packaging>
 
-    <name>CodeAlpha AI Chatbot</name>
-    <description>Task 3 - Artificial Intelligence Chatbot for CodeAlpha Java Programming Internship</description>
+    <name>RAJ AI</name>
+    <description>RAJ AI - Task 3 Artificial Intelligence Chatbot for CodeAlpha Java Programming Internship</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

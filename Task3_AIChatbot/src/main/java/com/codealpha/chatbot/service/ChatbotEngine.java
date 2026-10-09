@@ -153,19 +153,19 @@ public class ChatbotEngine {
 
     private String getSystemIntentResponse(IntentType intent) {
         return switch (intent) {
-            case GREETINGS -> "Hello! I am your CodeAlpha AI Assistant. What Java or OOP topic can I help you master today?";
-            case INTRODUCTION -> "I am the CodeAlpha AI Chatbot for Task 3 of the Java Programming Internship.\n\n"
+            case GREETINGS -> "Hello! I am RAJ AI, your intelligent Java assistant. What Java or OOP topic can I help you master today?";
+            case INTRODUCTION -> "I am RAJ AI, an intelligent desktop chatbot developed for Task 3 of the CodeAlpha Java Programming Internship.\n\n"
                     + "I specialize in Core Java, Object-Oriented Principles, Collections, Exception Handling, and File I/O.\n"
                     + "Ask me a question or try a suggested card!";
-            case GENERAL_HELP -> "Here is how you can use the assistant:\n\n"
+            case GENERAL_HELP -> "Here is how you can use RAJ AI:\n\n"
                     + "1. **Ask Java Questions**: Type concepts like 'Explain OOP', 'What is Polymorphism', 'How does try-catch work?'\n"
                     + "2. **Ask Follow-ups**: Say 'Give me an example' or 'Explain it line by line'\n"
                     + "3. **Analytics Dashboard**: Visit the Dashboard to see your conversation statistics and intent frequency\n"
                     + "4. **Knowledge Base**: Add and manage custom Q&A items in real-time\n"
                     + "5. **Settings**: Adjust font size and switch between Dark and Light themes.";
             case THANKS -> "You are very welcome! Let me know whenever you'd like to explore more Java concepts.";
-            case GOODBYE -> "Goodbye! Happy coding and all the best with your CodeAlpha Internship!";
-            default -> "I am ready to help you with Java and software development concepts. Please ask away!";
+            case GOODBYE -> "Goodbye! Happy coding and all the best with your Java development journey!";
+            default -> "I am RAJ AI, ready to help you with Java and software development concepts. Please ask away!";
         };
     }
 

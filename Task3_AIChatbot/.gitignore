@@ -15,6 +15,7 @@ release.properties
 .settings/
 *.sublime-project
 *.sublime-workspace
+bin/
 
 # Runtime / Local persistence data
 data/

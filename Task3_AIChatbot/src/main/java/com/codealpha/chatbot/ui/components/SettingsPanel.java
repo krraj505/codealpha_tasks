@@ -227,12 +227,13 @@ public class SettingsPanel extends JPanel {
         container.add(Box.createRigidArea(new Dimension(0, 16)));
 
         // 4. ABOUT CARD
-        JPanel aboutCard = createCard("About CodeAlpha AI Chatbot");
+        JPanel aboutCard = createCard("About RAJ AI");
 
         String infoHtml = "<html><body style='width: 520px; font-family: Segoe UI;'>"
-                + "<p><b>CodeAlpha AI Chatbot (Task 3)</b></p>"
-                + "<p>A desktop AI companion designed and implemented for the <b>CodeAlpha Java Programming Internship</b>.</p>"
+                + "<p><b>RAJ AI — Java Programming Assistant</b></p>"
+                + "<p>A modern desktop AI companion designed and implemented for the <b>CodeAlpha Java Programming Internship (Task 3)</b>.</p>"
                 + "<br/>"
+                + "<p>• <b>Application:</b> RAJ AI</p>"
                 + "<p>• <b>Developer:</b> Kumar Raj</p>"
                 + "<p>• <b>Runtime:</b> Java 17+ (Swing GUI & FlatLaf Engine)</p>"
                 + "<p>• <b>Architecture:</b> Modular Layered Model-Service-UI Architecture</p>"

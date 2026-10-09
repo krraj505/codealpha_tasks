@@ -1,4 +1,4 @@
-# 🤖 CodeAlpha AI Chatbot (Task 3)
+# 🤖 RAJ AI — Desktop Java Programming Assistant
 
 [![Java](https://img.shields.io/badge/Java-17%2B-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)](https://openjdk.org/)
 [![Maven](https://img.shields.io/badge/Maven-3.9%2B-C71A36?style=for-the-badge&logo=apachemaven&logoColor=white)](https://maven.apache.org/)
@@ -6,14 +6,15 @@
 [![Internship](https://img.shields.io/badge/CodeAlpha-Java%20Internship-8B5CF6?style=for-the-badge)](https://codealpha.tech/)
 [![Build](https://img.shields.io/badge/Build-Passing-10B981?style=for-the-badge)]()
 
-A high-performance, desktop AI Chatbot and intelligent Java pair programmer developed for **Task 3** of the **CodeAlpha Java Programming Internship**. Built from scratch in **Java 17+** with a custom Swing UI/UX design system, rule-based NLP intent recognition engine, multi-turn conversation context tracking, live analytics dashboard, real-time knowledge base management, and thread-safe atomic local JSON persistence.
+**RAJ AI** is a high-performance desktop AI Chatbot and intelligent Java pair programmer developed for **Task 3 (Artificial Intelligence Chatbot)** of the **CodeAlpha Java Programming Internship**. Built from scratch in **Java 17+** with a custom Swing UI/UX design system, rule-based NLP intent recognition engine, multi-turn conversation context tracking, live analytics dashboard, real-time knowledge base management, and thread-safe atomic local JSON persistence.
 
 ---
 
 ## 🌟 Executive Summary
 
-Unlike standard introductory chatbots that rely on simple if-else statements or plain console I/O, the **CodeAlpha AI Chatbot** is engineered as an enterprise-grade desktop software application. It delivers a modern AI user experience comparable to leading AI desktop tools, featuring:
+Unlike standard introductory chatbots that rely on simple if-else statements or plain console I/O, **RAJ AI** is engineered as an enterprise-grade desktop software application. It delivers a modern AI user experience comparable to leading AI desktop tools, featuring:
 - **Premium Design System**: Dark Navy (`#0A0F1D`) and Charcoal (`#131C33`) surfaces with Electric Blue (`#3B82F6`) and Violet (`#8B5CF6`) accents, plus dynamic 1-click Light Studio theme switching.
+- **Minimalist RAJ AI Vector Logo**: Procedurally rendered vector badge in Graphics2D that scales crisp at all DPI levels.
 - **Rule-Based NLP & Intent Recognition**: 21 recognized technical and conversational intents with tokenization, keyword extraction preserving programming terms, stemming, and fuzzy Levenshtein similarity.
 - **Contextual Awareness & Follow-ups**: Maintains conversation state across turns. For example, asking *"Explain Java classes"* followed by *"Give me an example"* generates the class code snippet, and *"Explain it line by line"* breaks down the snippet sequentially.
 - **Advanced Analytics Dashboard**: 4 custom-rendered vector charts (Area activity chart, Donut intent distribution, Bar category usage, Stacked quality meter) and KPI metrics calculated strictly from actual stored data.
@@ -27,7 +28,7 @@ Unlike standard introductory chatbots that rely on simple if-else statements or 
 The application window is organized into three balanced regions:
 
 ### 1. Left Sidebar
-- **Branding & Logo**: Vector-rendered AI Assistant icon with CodeAlpha typography.
+- **Branding & Logo**: Vector-rendered RAJ AI emblem with modern typography.
 - **New Chat Action**: Primary button to initiate a new session instantly.
 - **Navigation Menu**:
   - `Chat Assistant`: Primary interactive conversational workspace.

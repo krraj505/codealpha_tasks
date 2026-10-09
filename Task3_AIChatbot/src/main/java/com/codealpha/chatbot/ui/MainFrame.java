@@ -40,7 +40,7 @@ public class MainFrame extends JFrame {
     private boolean contextPanelVisible = true;
 
     public MainFrame() {
-        super("CodeAlpha AI Chatbot | Java Assistant");
+        super("RAJ AI | Java Assistant");
 
         // Initialize Data and Services
         this.storageService = new JsonStorageService();
@@ -71,7 +71,7 @@ public class MainFrame extends JFrame {
         BufferedImage img = new BufferedImage(32, 32, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2 = img.createGraphics();
         UiUtils.setRenderingHints(g2);
-        Icon icon = UiUtils.createRobotIcon(30, new Color(0x3B, 0x82, 0xF6));
+        Icon icon = UiUtils.createRajAiLogo(30);
         icon.paintIcon(this, g2, 1, 1);
         g2.dispose();
         setIconImage(img);

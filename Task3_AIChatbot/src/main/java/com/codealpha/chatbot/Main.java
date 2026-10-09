@@ -5,7 +5,7 @@ import com.codealpha.chatbot.ui.MainFrame;
 import javax.swing.*;
 
 /**
- * Main application entry point for the CodeAlpha AI Chatbot.
+ * Main application entry point for RAJ AI.
  * Launches the Swing Event-Dispatch Thread with modern High-DPI
  * and subpixel text antialiasing configurations.
  */
@@ -24,7 +24,7 @@ public class Main {
             } catch (Exception e) {
                 e.printStackTrace();
                 JOptionPane.showMessageDialog(null,
-                        "Failed to launch CodeAlpha AI Chatbot: " + e.getMessage(),
+                        "Failed to launch RAJ AI: " + e.getMessage(),
                         "Startup Error", JOptionPane.ERROR_MESSAGE);
             }
         });

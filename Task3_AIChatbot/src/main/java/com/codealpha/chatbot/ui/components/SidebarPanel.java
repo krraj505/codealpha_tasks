@@ -84,8 +84,8 @@ public class SidebarPanel extends JPanel {
             JPanel brandPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 4));
             brandPanel.setOpaque(false);
 
-            JLabel logo = new JLabel(UiUtils.createRobotIcon(24, palette.accentPrimary));
-            JLabel title = new JLabel("CodeAlpha AI");
+            JLabel logo = new JLabel(UiUtils.createRajAiLogo(26));
+            JLabel title = new JLabel("RAJ AI");
             title.setFont(ThemeManager.getInstance().getTitleFont());
             title.setForeground(palette.textPrimary);
 
@@ -93,7 +93,7 @@ public class SidebarPanel extends JPanel {
             brandPanel.add(title);
             top.add(brandPanel, BorderLayout.WEST);
         } else {
-            JLabel logo = new JLabel(UiUtils.createRobotIcon(28, palette.accentPrimary));
+            JLabel logo = new JLabel(UiUtils.createRajAiLogo(32));
             logo.setHorizontalAlignment(SwingConstants.CENTER);
             top.add(logo, BorderLayout.CENTER);
         }

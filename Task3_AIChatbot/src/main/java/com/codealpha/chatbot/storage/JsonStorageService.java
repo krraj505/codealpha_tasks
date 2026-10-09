@@ -165,7 +165,7 @@ public class JsonStorageService {
 
         // Fallback minimal in-memory entry if no file is present
         List<KnowledgeEntry> fallback = new ArrayList<>();
-        KnowledgeEntry intro = new KnowledgeEntry("Conversational", "Hello", "Hello! I am your CodeAlpha AI Chatbot.");
+        KnowledgeEntry intro = new KnowledgeEntry("Conversational", "Hello", "Hello! I am RAJ AI, your intelligent Java assistant.");
         intro.getKeywords().add("hello");
         fallback.add(intro);
         return fallback;

@@ -110,7 +110,7 @@ public class DashboardPanel extends JPanel {
 
         convKpi = new KpiCard("Total Conversations", "0", UiUtils.createChatIcon(18, palette.accentPrimary), palette.accentPrimary);
         userMsgKpi = new KpiCard("User Messages", "0", UiUtils.createSendIcon(18, palette.accentSecondary), palette.accentSecondary);
-        assistantMsgKpi = new KpiCard("AI Responses", "0", UiUtils.createRobotIcon(18, palette.accentTertiary), palette.accentTertiary);
+        assistantMsgKpi = new KpiCard("AI Responses", "0", UiUtils.createRajAiLogo(18, palette.accentTertiary, palette.accentPrimary), palette.accentTertiary);
         responseTimeKpi = new KpiCard("Avg Response Time", "0 ms", UiUtils.createDashboardIcon(18, palette.accentSuccess), palette.accentSuccess);
 
         kpiGrid.add(convKpi);
